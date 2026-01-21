@@ -3,8 +3,8 @@
 //! Handles text shaping, line breaking, and glyph positioning.
 
 use parley::layout::{Alignment, Layout, PositionedLayoutItem};
-use parley::style::{FontStack, FontWeight, StyleProperty};
-use parley::{FontContext, LayoutContext};
+use parley::style::{FontStack, FontWeight, LineHeight, StyleProperty};
+use parley::{AlignmentOptions, FontContext, LayoutContext};
 use std::borrow::Cow;
 use taffy::Size;
 
@@ -25,8 +25,8 @@ impl TextLayoutEngine {
     }
 
     /// Register a font from binary data.
-    pub fn register_font(&mut self, data: &[u8]) {
-        self.font_cx.collection.register_fonts(data.to_vec());
+    pub fn register_font(&mut self, data: Vec<u8>) {
+        self.font_cx.collection.register_fonts(data.into(), None);
     }
 
     /// Measure text and return (width, height).
@@ -40,10 +40,10 @@ impl TextLayoutEngine {
 
         let mut builder = self
             .layout_cx
-            .ranged_builder(&mut self.font_cx, text, 1.0);
+            .ranged_builder(&mut self.font_cx, text, 1.0, false);
 
         builder.push_default(StyleProperty::FontSize(font_size));
-        builder.push_default(StyleProperty::LineHeight(1.2));
+        builder.push_default(StyleProperty::LineHeight(LineHeight::FontSizeRelative(1.2)));
 
         let mut layout: Layout<[u8; 4]> = builder.build(text);
         layout.break_all_lines(max_width);
@@ -75,11 +75,13 @@ impl TextLayoutEngine {
 
         let mut builder = self
             .layout_cx
-            .ranged_builder(&mut self.font_cx, text, 1.0);
+            .ranged_builder(&mut self.font_cx, text, 1.0, false);
 
         builder.push_default(StyleProperty::FontSize(font_size));
         builder.push_default(StyleProperty::FontWeight(FontWeight::new(font_weight as f32)));
-        builder.push_default(StyleProperty::LineHeight(line_height));
+        builder.push_default(StyleProperty::LineHeight(LineHeight::FontSizeRelative(
+            line_height,
+        )));
         builder.push_default(StyleProperty::FontStack(FontStack::Source(Cow::Owned(
             font_family.to_string(),
         ))));
@@ -89,11 +91,11 @@ impl TextLayoutEngine {
 
         let alignment = match text_align {
             TextAlign::Left => Alignment::Start,
-            TextAlign::Center => Alignment::Middle,
+            TextAlign::Center => Alignment::Center,
             TextAlign::Right => Alignment::End,
-            TextAlign::Justify => Alignment::Justified,
+            TextAlign::Justify => Alignment::Justify,
         };
-        layout.align(Some(max_width), alignment);
+        layout.align(Some(max_width), alignment, AlignmentOptions::default());
 
         // Extract lines
         let mut lines = Vec::new();
@@ -160,7 +162,7 @@ pub struct TextLine {
 /// A positioned glyph.
 #[derive(Debug, Clone)]
 pub struct PositionedGlyph {
-    pub glyph_id: u16,
+    pub glyph_id: u32,
     pub x: f32,
     pub y: f32,
     pub advance: f32,

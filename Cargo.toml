@@ -27,6 +27,13 @@ serde-wasm-bindgen = "0.6.5"
 # Error handling
 thiserror = "2.0.18"
 
+# Optional WASM debugging
+console_error_panic_hook = { version = "0.1.7", optional = true }
+
+[features]
+default = []
+console_error_panic_hook = ["dep:console_error_panic_hook"]
+
 [dev-dependencies]
 wasm-bindgen-test = "0.3.58"
 

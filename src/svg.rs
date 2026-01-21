@@ -38,7 +38,6 @@ struct SvgBuilder<'a> {
     output: String,
     options: &'a SvgOptions,
     clip_id_counter: u32,
-    indent_level: usize,
 }
 
 impl<'a> SvgBuilder<'a> {
@@ -65,7 +64,6 @@ impl<'a> SvgBuilder<'a> {
             output,
             options,
             clip_id_counter: 0,
-            indent_level: 1,
         }
     }
 

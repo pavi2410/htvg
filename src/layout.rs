@@ -5,8 +5,13 @@
 use std::collections::HashMap;
 
 use taffy::prelude::*;
+use taffy::style::Style;
 
-use crate::element::*;
+use crate::element::{
+    self, AlignItems as ElemAlignItems, BoxStyle, Color, Dimension, Element,
+    FlexDirection as ElemFlexDirection, FlexStyle, FlexWrap as ElemFlexWrap, ImageStyle,
+    JustifyContent as ElemJustifyContent, Spacing, TextAlign, TextRendering, TextStyle,
+};
 use crate::text::TextLayoutEngine;
 
 /// Context attached to Taffy leaf nodes that need measurement.
@@ -351,7 +356,7 @@ fn measure_function(
 fn box_style_to_taffy(style: &BoxStyle) -> Style {
     Style {
         display: match style.display {
-            Some(Display::None) => taffy::Display::None,
+            Some(element::Display::None) => taffy::Display::None,
             _ => taffy::Display::Block,
         },
         size: Size {
@@ -376,7 +381,7 @@ fn box_style_to_taffy(style: &BoxStyle) -> Style {
 fn flex_style_to_taffy(style: &FlexStyle) -> Style {
     Style {
         display: match style.display {
-            Some(Display::None) => taffy::Display::None,
+            Some(element::Display::None) => taffy::Display::None,
             _ => taffy::Display::Flex,
         },
         size: Size {
@@ -395,32 +400,32 @@ fn flex_style_to_taffy(style: &FlexStyle) -> Style {
         padding: spacing_to_taffy_rect_lp(&style.padding),
         border: spacing_to_taffy_rect_lp(&style.border_width.map(Spacing::Uniform)),
         flex_direction: match style.flex_direction {
-            Some(FlexDirection::Row) | None => taffy::FlexDirection::Row,
-            Some(FlexDirection::Column) => taffy::FlexDirection::Column,
-            Some(FlexDirection::RowReverse) => taffy::FlexDirection::RowReverse,
-            Some(FlexDirection::ColumnReverse) => taffy::FlexDirection::ColumnReverse,
+            Some(ElemFlexDirection::Row) | None => taffy::FlexDirection::Row,
+            Some(ElemFlexDirection::Column) => taffy::FlexDirection::Column,
+            Some(ElemFlexDirection::RowReverse) => taffy::FlexDirection::RowReverse,
+            Some(ElemFlexDirection::ColumnReverse) => taffy::FlexDirection::ColumnReverse,
         },
         justify_content: Some(match style.justify_content {
-            Some(JustifyContent::FlexStart) | None => taffy::JustifyContent::FlexStart,
-            Some(JustifyContent::FlexEnd) => taffy::JustifyContent::FlexEnd,
-            Some(JustifyContent::Center) => taffy::JustifyContent::Center,
-            Some(JustifyContent::SpaceBetween) => taffy::JustifyContent::SpaceBetween,
-            Some(JustifyContent::SpaceAround) => taffy::JustifyContent::SpaceAround,
-            Some(JustifyContent::SpaceEvenly) => taffy::JustifyContent::SpaceEvenly,
+            Some(ElemJustifyContent::FlexStart) | None => taffy::JustifyContent::FlexStart,
+            Some(ElemJustifyContent::FlexEnd) => taffy::JustifyContent::FlexEnd,
+            Some(ElemJustifyContent::Center) => taffy::JustifyContent::Center,
+            Some(ElemJustifyContent::SpaceBetween) => taffy::JustifyContent::SpaceBetween,
+            Some(ElemJustifyContent::SpaceAround) => taffy::JustifyContent::SpaceAround,
+            Some(ElemJustifyContent::SpaceEvenly) => taffy::JustifyContent::SpaceEvenly,
         }),
         align_items: Some(match style.align_items {
-            Some(AlignItems::FlexStart) => taffy::AlignItems::FlexStart,
-            Some(AlignItems::FlexEnd) => taffy::AlignItems::FlexEnd,
-            Some(AlignItems::Center) => taffy::AlignItems::Center,
-            Some(AlignItems::Stretch) | None => taffy::AlignItems::Stretch,
-            Some(AlignItems::Baseline) => taffy::AlignItems::Baseline,
+            Some(ElemAlignItems::FlexStart) => taffy::AlignItems::FlexStart,
+            Some(ElemAlignItems::FlexEnd) => taffy::AlignItems::FlexEnd,
+            Some(ElemAlignItems::Center) => taffy::AlignItems::Center,
+            Some(ElemAlignItems::Stretch) | None => taffy::AlignItems::Stretch,
+            Some(ElemAlignItems::Baseline) => taffy::AlignItems::Baseline,
         }),
         gap: Size {
             width: length(style.gap.unwrap_or(0.0)),
             height: length(style.gap.unwrap_or(0.0)),
         },
         flex_wrap: match style.flex_wrap {
-            Some(FlexWrap::Wrap) => taffy::FlexWrap::Wrap,
+            Some(ElemFlexWrap::Wrap) => taffy::FlexWrap::Wrap,
             _ => taffy::FlexWrap::NoWrap,
         },
         ..Default::default()
@@ -466,11 +471,11 @@ fn image_style_to_taffy(style: &ImageStyle, intrinsic_width: f32, intrinsic_heig
 
 fn dimension_to_taffy(dim: &Option<Dimension>) -> taffy::Dimension {
     match dim {
-        None => taffy::Dimension::Auto,
-        Some(Dimension::Px(px)) => taffy::Dimension::Length(*px),
+        None => taffy::Dimension::auto(),
+        Some(Dimension::Px(px)) => taffy::Dimension::length(*px),
         Some(Dimension::Percent(s)) => {
             let pct = s.trim_end_matches('%').parse::<f32>().unwrap_or(0.0);
-            taffy::Dimension::Percent(pct / 100.0)
+            taffy::Dimension::percent(pct / 100.0)
         }
     }
 }
@@ -478,18 +483,18 @@ fn dimension_to_taffy(dim: &Option<Dimension>) -> taffy::Dimension {
 fn spacing_to_taffy_rect(spacing: &Option<Spacing>) -> Rect<LengthPercentageAuto> {
     match spacing {
         None => Rect {
-            top: LengthPercentageAuto::Length(0.0),
-            right: LengthPercentageAuto::Length(0.0),
-            bottom: LengthPercentageAuto::Length(0.0),
-            left: LengthPercentageAuto::Length(0.0),
+            top: LengthPercentageAuto::length(0.0),
+            right: LengthPercentageAuto::length(0.0),
+            bottom: LengthPercentageAuto::length(0.0),
+            left: LengthPercentageAuto::length(0.0),
         },
         Some(s) => {
             let [top, right, bottom, left] = s.to_edges();
             Rect {
-                top: LengthPercentageAuto::Length(top),
-                right: LengthPercentageAuto::Length(right),
-                bottom: LengthPercentageAuto::Length(bottom),
-                left: LengthPercentageAuto::Length(left),
+                top: LengthPercentageAuto::length(top),
+                right: LengthPercentageAuto::length(right),
+                bottom: LengthPercentageAuto::length(bottom),
+                left: LengthPercentageAuto::length(left),
             }
         }
     }
@@ -498,18 +503,18 @@ fn spacing_to_taffy_rect(spacing: &Option<Spacing>) -> Rect<LengthPercentageAuto
 fn spacing_to_taffy_rect_lp(spacing: &Option<Spacing>) -> Rect<LengthPercentage> {
     match spacing {
         None => Rect {
-            top: LengthPercentage::Length(0.0),
-            right: LengthPercentage::Length(0.0),
-            bottom: LengthPercentage::Length(0.0),
-            left: LengthPercentage::Length(0.0),
+            top: LengthPercentage::length(0.0),
+            right: LengthPercentage::length(0.0),
+            bottom: LengthPercentage::length(0.0),
+            left: LengthPercentage::length(0.0),
         },
         Some(s) => {
             let [top, right, bottom, left] = s.to_edges();
             Rect {
-                top: LengthPercentage::Length(top),
-                right: LengthPercentage::Length(right),
-                bottom: LengthPercentage::Length(bottom),
-                left: LengthPercentage::Length(left),
+                top: LengthPercentage::length(top),
+                right: LengthPercentage::length(right),
+                bottom: LengthPercentage::length(bottom),
+                left: LengthPercentage::length(left),
             }
         }
     }
