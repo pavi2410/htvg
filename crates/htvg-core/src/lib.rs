@@ -32,6 +32,27 @@ pub use layout::LayoutEngine;
 pub use render::RenderTree;
 pub use svg::SvgOptions;
 
+/// A font source to register before rendering.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FontSource {
+    /// Font family name (used in SVG @font-face and as identifier).
+    pub family: String,
+    /// URL to the font file — emitted as @font-face src in the SVG.
+    #[serde(default)]
+    pub url: Option<String>,
+    /// Font weight (default: 400).
+    #[serde(default = "default_font_weight")]
+    pub weight: u16,
+    /// Base64-encoded font data (TTF/OTF/WOFF2) — used for text layout.
+    #[serde(default)]
+    pub data: Option<String>,
+}
+
+fn default_font_weight() -> u16 {
+    400
+}
+
 /// Compilation options.
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -40,12 +61,18 @@ pub struct CompileOptions {
     pub width: f32,
     /// Output height in pixels (auto-computed if not specified)
     pub height: Option<f32>,
-    /// Base font size for relative units (default: 16)
-    #[serde(default = "default_base_font_size")]
-    pub base_font_size: f32,
+    /// Default font size (default: 16)
+    #[serde(default = "default_font_size")]
+    pub font_size: f32,
+    /// Font family applied to text elements without an explicit fontFamily
+    #[serde(default)]
+    pub font_family: Option<String>,
+    /// Fonts to register.
+    #[serde(default)]
+    pub fonts: Vec<FontSource>,
 }
 
-fn default_base_font_size() -> f32 {
+fn default_font_size() -> f32 {
     16.0
 }
 
@@ -54,7 +81,9 @@ impl Default for CompileOptions {
         Self {
             width: 800.0,
             height: None,
-            base_font_size: 16.0,
+            font_size: 16.0,
+            font_family: None,
+            fonts: Vec::new(),
         }
     }
 }
@@ -147,9 +176,23 @@ pub fn compile_element(
     // Create layout engine
     let mut layout_engine = LayoutEngine::new();
 
+    // Decode and register base64 font data (used by CLI; WASM falls back to approximate layout)
+    for font in &options.fonts {
+        if let Some(data) = &font.data {
+            use base64::Engine;
+            let bytes = base64::engine::general_purpose::STANDARD
+                .decode(data)
+                .map_err(|e| CompileError {
+                    message: format!("Invalid base64 font data: {}", e),
+                    kind: "font_error".to_string(),
+                })?;
+            layout_engine.text_engine.register_font(bytes);
+        }
+    }
+
     // Compute layout
     let layout_result = layout_engine
-        .compute_layout(element, options.width, options.height)
+        .compute_layout(element, options.width, options.height, options.font_family.as_deref())
         .map_err(|e| CompileError {
             message: e.to_string(),
             kind: "layout_error".to_string(),
@@ -160,7 +203,7 @@ pub fn compile_element(
 
     // Generate SVG
     let svg_options = SvgOptions::default();
-    let svg = svg::generate_svg(&render_tree, &svg_options);
+    let svg = svg::generate_svg(&render_tree, &svg_options, &options.fonts);
 
     Ok(CompileResult {
         svg,
@@ -190,8 +233,7 @@ mod tests {
 
         let options = CompileOptions {
             width: 400.0,
-            height: None,
-            base_font_size: 16.0,
+            ..CompileOptions::default()
         };
 
         let result = compile(json, &options).unwrap();

@@ -23,6 +23,7 @@ export type {
   TextAlign,
   ObjectFit,
   // Document & compilation
+  FontSource,
   HtvgDocument,
   CompileOptions,
   CompileResult,
@@ -96,6 +97,9 @@ function getWasm(): HtvgWasm {
 /**
  * Compile a self-contained HTVG document to SVG.
  *
+ * Font URLs in `meta.fonts` are emitted as `@font-face` declarations in the SVG.
+ * The browser/viewer handles loading them.
+ *
  * @param doc - An HtvgDocument object or a JSON string.
  * @returns Compilation result with SVG string and metadata.
  */
@@ -129,3 +133,4 @@ export function compile(
 export function version(): string {
   return getWasm().version();
 }
+

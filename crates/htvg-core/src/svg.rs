@@ -1,6 +1,7 @@
 //! SVG generation from render commands.
 
 use crate::render::{Rect, RenderCommand, RenderTree};
+use crate::FontSource;
 
 /// Options for SVG generation.
 #[derive(Debug, Clone)]
@@ -24,8 +25,11 @@ impl Default for SvgOptions {
 }
 
 /// Generate SVG string from render tree.
-pub fn generate_svg(tree: &RenderTree, options: &SvgOptions) -> String {
+pub fn generate_svg(tree: &RenderTree, options: &SvgOptions, fonts: &[FontSource]) -> String {
     let mut svg = SvgBuilder::new(tree.width, tree.height, options);
+
+    // Emit @font-face declarations for fonts with URLs
+    svg.render_font_faces(fonts);
 
     for command in &tree.commands {
         svg.render_command(command);
@@ -65,6 +69,25 @@ impl<'a> SvgBuilder<'a> {
             options,
             clip_id_counter: 0,
         }
+    }
+
+    fn render_font_faces(&mut self, fonts: &[FontSource]) {
+        let url_fonts: Vec<_> = fonts.iter().filter(|f| f.url.is_some()).collect();
+        if url_fonts.is_empty() {
+            return;
+        }
+
+        self.output.push_str("<defs><style>");
+        for font in url_fonts {
+            let url = font.url.as_ref().unwrap();
+            self.output.push_str(&format!(
+                "@font-face {{ font-family: '{}'; src: url('{}'); font-weight: {}; font-display: swap; }}",
+                escape_xml(&font.family),
+                escape_xml(url),
+                font.weight
+            ));
+        }
+        self.output.push_str("</style></defs>");
     }
 
     fn render_command(&mut self, cmd: &RenderCommand) {
@@ -253,7 +276,7 @@ impl<'a> SvgBuilder<'a> {
             self.output.push_str(&format!(
                 "<text x=\"{:.p$}\" y=\"{:.p$}\" \
                  fill=\"{}\" \
-                 font-family=\"{}\" \
+                 font-family=\"'{}', sans-serif\" \
                  font-size=\"{:.p$}\" \
                  font-weight=\"{}\">{}</text>",
                 line.x,
@@ -268,7 +291,7 @@ impl<'a> SvgBuilder<'a> {
         } else {
             self.output.push_str(&format!(
                 "<text fill=\"{}\" \
-                 font-family=\"{}\" \
+                 font-family=\"'{}', sans-serif\" \
                  font-size=\"{:.p$}\" \
                  font-weight=\"{}\">",
                 color.to_css(),

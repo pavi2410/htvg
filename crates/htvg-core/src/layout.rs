@@ -130,12 +130,13 @@ impl LayoutEngine {
         element: &Element,
         viewport_width: f32,
         viewport_height: Option<f32>,
+        default_font_family: Option<&str>,
     ) -> Result<LayoutResult, LayoutError> {
         let mut taffy: TaffyTree<NodeContext> = TaffyTree::new();
         let mut node_data = HashMap::new();
 
         // Build tree recursively
-        let root = self.build_node(&mut taffy, &mut node_data, element)?;
+        let root = self.build_node(&mut taffy, &mut node_data, element, default_font_family)?;
 
         // Compute layout
         let available_space = Size {
@@ -168,13 +169,14 @@ impl LayoutEngine {
         taffy: &mut TaffyTree<NodeContext>,
         node_data: &mut HashMap<NodeId, NodeData>,
         element: &Element,
+        default_font_family: Option<&str>,
     ) -> Result<NodeId, LayoutError> {
         match element {
             Element::Box { style, children } => {
                 let taffy_style = box_style_to_taffy(style);
                 let child_ids = children
                     .iter()
-                    .map(|child| self.build_node(taffy, node_data, child))
+                    .map(|child| self.build_node(taffy, node_data, child, default_font_family))
                     .collect::<Result<Vec<_>, _>>()?;
 
                 let node_id = taffy.new_with_children(taffy_style, &child_ids)?;
@@ -204,7 +206,7 @@ impl LayoutEngine {
                 let taffy_style = flex_style_to_taffy(style);
                 let child_ids = children
                     .iter()
-                    .map(|child| self.build_node(taffy, node_data, child))
+                    .map(|child| self.build_node(taffy, node_data, child, default_font_family))
                     .collect::<Result<Vec<_>, _>>()?;
 
                 let node_id = taffy.new_with_children(taffy_style, &child_ids)?;
@@ -252,6 +254,7 @@ impl LayoutEngine {
                                 font_family: style
                                     .font_family
                                     .clone()
+                                    .or_else(|| default_font_family.map(String::from))
                                     .unwrap_or_else(|| "sans-serif".to_string()),
                                 font_size: style.font_size.unwrap_or(16.0),
                                 font_weight: style.font_weight.map(|w| w.0).unwrap_or(400),

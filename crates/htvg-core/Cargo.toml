@@ -17,5 +17,8 @@ taffy = "0.9.2"
 parley = "0.7.0"
 ttf-parser = "0.25.1"
 
+# Base64 decoding (for embedded fonts)
+base64 = "0.22"
+
 # Error handling
 thiserror = "2.0.18"

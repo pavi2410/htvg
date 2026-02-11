@@ -168,14 +168,30 @@ export type Element = BoxElement | FlexElement | TextElement | ImageElement;
 // Document & compilation types
 // ============================================================================
 
+/** A font source to register before rendering. */
+export interface FontSource {
+  /** Font family name (used in SVG @font-face and as identifier). */
+  family: string;
+  /** URL to the font file — emitted as @font-face src in the SVG. */
+  url?: string;
+  /** Font weight (default: 400). */
+  weight?: number;
+  /** Base64-encoded font data (TTF/OTF/WOFF2) — used for text layout. */
+  data?: string;
+}
+
 /** Compilation options (mirrors Rust CompileOptions). */
 export interface CompileOptions {
   /** Output width in pixels. */
   width: number;
   /** Output height in pixels (auto-computed if omitted). */
   height?: number;
-  /** Base font size for relative units (default: 16). */
-  baseFontSize?: number;
+  /** Default font size (default: 16). */
+  fontSize?: number;
+  /** Font family applied to text elements without an explicit fontFamily. */
+  fontFamily?: string;
+  /** Fonts to register. */
+  fonts?: FontSource[];
 }
 
 /** Self-contained HTVG document. */
