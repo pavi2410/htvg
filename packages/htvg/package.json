@@ -1,6 +1,6 @@
 {
   "name": "htvg",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "HTVG - JSON element tree to SVG compiler",
   "author": "Pavitra Golchha <hello@pavi2410.com>",
   "repository": {
@@ -9,7 +9,15 @@
     "directory": "packages/htvg"
   },
   "homepage": "https://github.com/pavi2410/htvg",
-  "keywords": ["svg", "json", "layout", "text", "flexbox", "wasm", "compiler"],
+  "keywords": [
+    "svg",
+    "json",
+    "layout",
+    "text",
+    "flexbox",
+    "wasm",
+    "compiler"
+  ],
   "type": "module",
   "exports": {
     ".": {
