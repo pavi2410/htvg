@@ -98,22 +98,12 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-function renderExampleCard(name: string, json: string, svg: string): string {
-  return `
-    <section class="example">
-      <h2>${escapeHtml(name)}</h2>
-      <div class="example-body">
-        <div class="code-pane">
-          <pre><code>${escapeHtml(json)}</code></pre>
-        </div>
-        <div class="svg-pane">
-          ${svg}
-        </div>
-      </div>
-    </section>`;
-}
+function buildPage(ver: string, defaultPlaygroundJson: string): string {
+  const selectOptions = examples
+    .map((ex) => '<option value="' + escapeHtml(ex.name) + '">' + escapeHtml(ex.name) + "</option>")
+    .join("");
+  const examplesJsonBlob = JSON.stringify(Object.fromEntries(examples.map((ex) => [ex.name, ex.doc])));
 
-function buildPage(cards: string, ver: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -132,10 +122,20 @@ function buildPage(cards: string, ver: string): string {
       min-height: 100vh;
     }
 
+    a { color: #38bdf8; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
     header {
       max-width: 1100px;
       margin: 0 auto;
       padding: 48px 24px 32px;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
     }
 
     header h1 {
@@ -145,6 +145,18 @@ function buildPage(cards: string, ver: string): string {
       color: #f8fafc;
     }
 
+    .github-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+    .github-link:hover { color: #f8fafc; text-decoration: none; }
+    .github-link svg { fill: currentColor; }
+
     header p {
       margin-top: 8px;
       font-size: 16px;
@@ -152,9 +164,14 @@ function buildPage(cards: string, ver: string): string {
       line-height: 1.6;
     }
 
-    header .version {
-      display: inline-block;
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       margin-top: 12px;
+    }
+
+    .version {
       font-family: 'JetBrains Mono', monospace;
       font-size: 13px;
       background: #1e293b;
@@ -169,46 +186,93 @@ function buildPage(cards: string, ver: string): string {
       padding: 0 24px 64px;
       display: flex;
       flex-direction: column;
-      gap: 40px;
+      gap: 48px;
     }
 
-    .example h2 {
-      font-size: 18px;
-      font-weight: 600;
-      color: #cbd5e1;
-      margin-bottom: 16px;
-      font-family: 'JetBrains Mono', monospace;
+    /* ---- Playground ---- */
+    .playground { display: flex; flex-direction: column; gap: 16px; }
+
+    .playground h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #f8fafc;
+      letter-spacing: -0.01em;
     }
 
-    .example-body {
+    .playground-desc {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .playground-body {
       display: flex;
       gap: 24px;
-      align-items: flex-start;
+      align-items: stretch;
     }
 
-    .code-pane {
+    .playground-editor {
       flex: 1;
       min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .playground-editor textarea {
+      flex: 1;
+      min-height: 400px;
+      resize: vertical;
       background: #1e293b;
       border: 1px solid #334155;
       border-radius: 12px;
-      overflow: auto;
-      max-height: 480px;
-    }
-
-    .code-pane pre {
       padding: 20px;
-      margin: 0;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 12.5px;
+      font-size: 13px;
       line-height: 1.6;
       color: #e2e8f0;
-      white-space: pre;
       tab-size: 2;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .playground-editor textarea:focus {
+      border-color: #38bdf8;
     }
 
-    .svg-pane {
+    .playground-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .playground-toolbar .status {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .playground-toolbar .status.error {
+      color: #f87171;
+    }
+    .playground-toolbar .status.ok {
+      color: #4ade80;
+    }
+
+    .example-select {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 13px;
+      padding: 6px 10px;
+      outline: none;
+      cursor: pointer;
+    }
+    .example-select:focus { border-color: #38bdf8; }
+
+    .playground-preview {
       flex-shrink: 0;
+      width: 540px;
       background: repeating-conic-gradient(#1e293b 0% 25%, #0f172a 0% 50%) 0 0 / 16px 16px;
       border: 1px solid #334155;
       border-radius: 12px;
@@ -216,19 +280,20 @@ function buildPage(cards: string, ver: string): string {
       display: flex;
       align-items: flex-start;
       justify-content: center;
+      overflow: auto;
     }
 
-    .svg-pane svg {
+    .playground-preview svg {
       display: block;
       max-width: 100%;
       height: auto;
     }
 
-    @media (max-width: 800px) {
-      .example-body {
+    @media (max-width: 900px) {
+      .playground-body {
         flex-direction: column;
       }
-      .svg-pane {
+      .playground-preview {
         width: 100%;
       }
     }
@@ -236,13 +301,97 @@ function buildPage(cards: string, ver: string): string {
 </head>
 <body>
   <header>
-    <h1>HTVG Demo</h1>
-    <p>JSON → SVG, rendered server-side with WASM on Cloudflare Workers.</p>
-    <span class="version">v${escapeHtml(ver)}</span>
+    <div class="header-top">
+      <h1>HTVG Demo</h1>
+      <a class="github-link" href="https://github.com/pavi2410/htvg" target="_blank" rel="noopener">
+        <svg width="20" height="20" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+    <p>JSON \u2192 SVG, rendered server-side with WASM on Cloudflare Workers.</p>
+    <div class="header-meta">
+      <span class="version">v${escapeHtml(ver)}</span>
+    </div>
   </header>
   <main>
-    ${cards}
+    <section class="playground">
+      <h2>Playground</h2>
+      <p class="playground-desc">Edit the JSON below and see the SVG update live.</p>
+      <div class="playground-body">
+        <div class="playground-editor">
+          <div class="playground-toolbar">
+            <label for="example-select" style="font-size:13px;color:#94a3b8">Load example:</label>
+            <select id="example-select" class="example-select">
+              <option value="">— custom —</option>
+              ${selectOptions}
+            </select>
+            <span id="pg-status" class="status"></span>
+          </div>
+          <textarea id="pg-input" spellcheck="false">${escapeHtml(defaultPlaygroundJson)}</textarea>
+        </div>
+        <div class="playground-preview" id="pg-preview"></div>
+      </div>
+    </section>
   </main>
+
+  <script>
+    const EXAMPLES = ${examplesJsonBlob};
+
+    const input = document.getElementById('pg-input');
+    const preview = document.getElementById('pg-preview');
+    const status = document.getElementById('pg-status');
+    const select = document.getElementById('example-select');
+    let timer = null;
+
+    async function compile() {
+      const json = input.value;
+      status.textContent = 'compiling...';
+      status.className = 'status';
+      try {
+        const res = await fetch('/api/compile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: json,
+        });
+        const data = await res.json();
+        if (data.error) {
+          status.textContent = data.error;
+          status.className = 'status error';
+        } else {
+          preview.innerHTML = data.svg;
+          status.textContent = data.width + ' \u00d7 ' + data.height;
+          status.className = 'status ok';
+        }
+      } catch (e) {
+        status.textContent = e.message;
+        status.className = 'status error';
+      }
+    }
+
+    function scheduleCompile() {
+      clearTimeout(timer);
+      timer = setTimeout(compile, 300);
+    }
+
+    input.addEventListener('input', () => {
+      select.value = '';
+      scheduleCompile();
+    });
+
+    select.addEventListener('change', () => {
+      const name = select.value;
+      if (name && EXAMPLES[name]) {
+        input.value = JSON.stringify(EXAMPLES[name], null, 2);
+        compile();
+      }
+    });
+
+    // Load first example on page load
+    select.value = Object.keys(EXAMPLES)[0] || '';
+
+    // Initial compile
+    compile();
+  </script>
 </body>
 </html>`;
 }
@@ -256,6 +405,19 @@ export default {
     await init(wasmBinary);
 
     const url = new URL(request.url);
+
+    // POST /api/compile  — playground live compilation
+    if (url.pathname === "/api/compile" && request.method === "POST") {
+      try {
+        const body = await request.text();
+        const doc: HtvgDocument = JSON.parse(body);
+        const result = compileDocument(doc);
+        return Response.json({ svg: result.svg, width: result.width, height: result.height });
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : String(e);
+        return Response.json({ error: msg }, { status: 400 });
+      }
+    }
 
     // /api/:name.svg  — raw SVG for a single example
     const svgMatch = url.pathname.match(/^\/api\/([a-z-]+)\.svg$/);
@@ -277,15 +439,8 @@ export default {
     }
 
     // Default: demo page
-    const cards = examples
-      .map((ex) => {
-        const json = JSON.stringify(ex.doc, null, 2);
-        const result = compileDocument(ex.doc);
-        return renderExampleCard(ex.name, json, result.svg);
-      })
-      .join("\n");
-
-    const html = buildPage(cards, version());
+    const defaultJson = JSON.stringify(examples[0].doc, null, 2);
+    const html = buildPage(version(), defaultJson);
     return new Response(html, {
       headers: { "Content-Type": "text/html; charset=utf-8" },
     });
