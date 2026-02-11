@@ -1,0 +1,17 @@
+{
+  "name": "htvg-cloudflare-test",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "wrangler deploy"
+  },
+  "dependencies": {
+    "htvg": "file:../htvg"
+  },
+  "devDependencies": {
+    "wrangler": "^4",
+    "@cloudflare/workers-types": "^4"
+  }
+}

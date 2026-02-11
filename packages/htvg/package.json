@@ -1,0 +1,30 @@
+{
+  "name": "htvg",
+  "version": "0.1.0",
+  "description": "HTVG - JSON element tree to SVG compiler",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./wasm": {
+      "types": "./dist/wasm/htvg.d.ts",
+      "import": "./dist/wasm/htvg.js"
+    },
+    "./htvg.wasm": "./dist/wasm/htvg_bg.wasm"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build:wasm": "wasm-pack build ../../crates/htvg-wasm --target web --out-dir ../../packages/htvg/dist/wasm --out-name htvg --no-pack",
+    "build:ts": "tsc",
+    "build": "npm run build:wasm && npm run build:ts",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  },
+  "license": "MIT OR Apache-2.0"
+}

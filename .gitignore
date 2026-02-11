@@ -1,2 +1,7 @@
 /target
 .DS_Store
+
+# TypeScript packages
+dist/
+node_modules/
+.wrangler/

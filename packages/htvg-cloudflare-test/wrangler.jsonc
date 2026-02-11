@@ -1,0 +1,5 @@
+{
+  "name": "htvg-cloudflare-test",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-02-11"
+}
