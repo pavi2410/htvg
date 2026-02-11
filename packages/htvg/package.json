@@ -2,6 +2,14 @@
   "name": "htvg",
   "version": "0.1.0",
   "description": "HTVG - JSON element tree to SVG compiler",
+  "author": "Pavitra Golchha <hello@pavi2410.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pavi2410/htvg.git",
+    "directory": "packages/htvg"
+  },
+  "homepage": "https://github.com/pavi2410/htvg",
+  "keywords": ["svg", "json", "layout", "text", "flexbox", "wasm", "compiler"],
   "type": "module",
   "exports": {
     ".": {
@@ -18,7 +26,7 @@
     "dist"
   ],
   "scripts": {
-    "build:wasm": "wasm-pack build ../../crates/htvg-wasm --target web --out-dir ../../packages/htvg/dist/wasm --out-name htvg --no-pack",
+    "build:wasm": "wasm-pack build ../../crates/htvg-wasm --target web --out-dir ../../packages/htvg/dist/wasm --out-name htvg --no-pack && rm -f dist/wasm/.gitignore",
     "build:ts": "tsc",
     "build": "npm run build:wasm && npm run build:ts",
     "prepack": "npm run build"

@@ -4,6 +4,11 @@ version = "0.1.0"
 edition = "2024"
 description = "JSON element tree to SVG compiler with correct text layout"
 license = "MIT OR Apache-2.0"
+repository = "https://github.com/pavi2410/htvg"
+homepage = "https://github.com/pavi2410/htvg"
+readme = "../../README.md"
+keywords = ["svg", "json", "layout", "text", "flexbox"]
+categories = ["graphics", "rendering", "wasm"]
 
 [dependencies]
 # JSON deserialization
