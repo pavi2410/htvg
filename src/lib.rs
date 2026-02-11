@@ -90,6 +90,34 @@ impl std::fmt::Display for CompileError {
 
 impl std::error::Error for CompileError {}
 
+/// A self-contained HTVG document with metadata and content.
+///
+/// ```json
+/// {
+///   "meta": { "width": 800 },
+///   "content": { "type": "flex", "children": [...] }
+/// }
+/// ```
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HtvgDocument {
+    /// Compilation options (width, height, etc.)
+    #[serde(default)]
+    pub meta: CompileOptions,
+    /// The element tree to render
+    pub content: Element,
+}
+
+/// Compile a self-contained HTVG document (meta + content) to SVG.
+pub fn compile_document(doc_json: &str) -> Result<CompileResult, CompileError> {
+    let doc: HtvgDocument = serde_json::from_str(doc_json).map_err(|e| CompileError {
+        message: e.to_string(),
+        kind: "parse_error".to_string(),
+    })?;
+
+    compile_element(&doc.content, &doc.meta)
+}
+
 /// Compile an element tree to SVG.
 ///
 /// # Arguments

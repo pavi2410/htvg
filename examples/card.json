@@ -1,0 +1,109 @@
+{
+  "meta": {
+    "width": 360
+  },
+  "content": {
+    "type": "flex",
+    "style": {
+      "width": 360,
+      "padding": 24,
+      "backgroundColor": "#f8f9fa",
+      "flexDirection": "column",
+      "gap": 16
+    },
+    "children": [
+      {
+        "type": "flex",
+        "style": {
+          "backgroundColor": "#ffffff",
+          "borderRadius": 12,
+          "borderWidth": 1,
+          "borderColor": "#e0e0e0",
+          "padding": 20,
+          "flexDirection": "column",
+          "gap": 8
+        },
+        "children": [
+          {
+            "type": "text",
+            "content": "Card Title",
+            "style": {
+              "fontSize": 20,
+              "fontWeight": 700,
+              "color": "#1a1a1a"
+            }
+          },
+          {
+            "type": "text",
+            "content": "This is a card component with a border, rounded corners, and some padding. It demonstrates nested flex containers.",
+            "style": {
+              "fontSize": 14,
+              "color": "#555555",
+              "lineHeight": 1.5
+            }
+          },
+          {
+            "type": "flex",
+            "style": {
+              "flexDirection": "row",
+              "gap": 8,
+              "padding": "12 0 0 0"
+            },
+            "children": [
+              {
+                "type": "box",
+                "style": {
+                  "width": 80,
+                  "height": 32,
+                  "backgroundColor": "#2563eb",
+                  "borderRadius": 6
+                }
+              },
+              {
+                "type": "box",
+                "style": {
+                  "width": 80,
+                  "height": 32,
+                  "backgroundColor": "#e2e8f0",
+                  "borderRadius": 6
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "flex",
+        "style": {
+          "backgroundColor": "#ffffff",
+          "borderRadius": 12,
+          "borderWidth": 1,
+          "borderColor": "#e0e0e0",
+          "padding": 20,
+          "flexDirection": "column",
+          "gap": 8
+        },
+        "children": [
+          {
+            "type": "text",
+            "content": "Another Card",
+            "style": {
+              "fontSize": 20,
+              "fontWeight": 700,
+              "color": "#1a1a1a"
+            }
+          },
+          {
+            "type": "text",
+            "content": "Cards can be stacked vertically in a flex column layout.",
+            "style": {
+              "fontSize": 14,
+              "color": "#555555",
+              "lineHeight": 1.5
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

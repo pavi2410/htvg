@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "width": 400
+  },
+  "content": {
+    "type": "flex",
+    "style": {
+      "width": 400,
+      "padding": 32,
+      "backgroundColor": "#ffffff",
+      "flexDirection": "column",
+      "gap": 12
+    },
+    "children": [
+      {
+        "type": "text",
+        "content": "Hello, HTVG!",
+        "style": {
+          "fontSize": 32,
+          "fontWeight": "bold",
+          "color": "#1a1a1a"
+        }
+      },
+      {
+        "type": "text",
+        "content": "This is a self-contained document rendered to SVG.",
+        "style": {
+          "fontSize": 16,
+          "color": "#666666"
+        }
+      }
+    ]
+  }
+}
