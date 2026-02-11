@@ -2,7 +2,7 @@ use std::fs;
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
-use htvg::{compile_document, CompileOptions, CompileResult};
+use htvg_core::{compile_document, CompileOptions, CompileResult};
 
 #[derive(Parser)]
 #[command(name = "htvg", version, about = "HTVG - JSON element tree to SVG compiler")]
@@ -57,10 +57,10 @@ fn main() {
                 Ok(r) => {
                     // Apply CLI overrides
                     if let Some(w) = width {
-                        let doc: htvg::HtvgDocument = serde_json::from_str(&json).unwrap();
+                        let doc: htvg_core::HtvgDocument = serde_json::from_str(&json).unwrap();
                         let mut opts = doc.meta;
                         opts.width = w;
-                        htvg::compile_element(&doc.content, &opts).unwrap_or(r)
+                        htvg_core::compile_element(&doc.content, &opts).unwrap_or(r)
                     } else {
                         r
                     }
@@ -71,7 +71,7 @@ fn main() {
                         width: width.unwrap_or(800.0),
                         ..CompileOptions::default()
                     };
-                    match htvg::compile(&json, &opts) {
+                    match htvg_core::compile(&json, &opts) {
                         Ok(r) => r,
                         Err(e) => {
                             eprintln!("Compile error: {}", e);

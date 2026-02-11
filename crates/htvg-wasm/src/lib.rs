@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 
-use htvg::{compile, compile_document, CompileOptions};
+use htvg_core::{compile, compile_document, CompileOptions};
 
 /// Initialize the WASM module (sets up panic hook for better error messages).
 #[wasm_bindgen(start)]
