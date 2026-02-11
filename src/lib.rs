@@ -26,7 +26,6 @@ pub mod svg;
 pub mod text;
 
 use serde::{Deserialize, Serialize};
-use wasm_bindgen::prelude::*;
 
 pub use element::Element;
 pub use layout::LayoutEngine;
@@ -169,38 +168,6 @@ pub fn compile_element(
         height: render_tree.height,
         warnings,
     })
-}
-
-// ============================================================================
-// WASM bindings
-// ============================================================================
-
-/// WASM entry point for compilation.
-#[wasm_bindgen]
-pub fn compile_to_svg(element_json: &str, options_json: &str) -> Result<JsValue, JsValue> {
-    // Set up panic hook for better error messages
-    #[cfg(feature = "console_error_panic_hook")]
-    console_error_panic_hook::set_once();
-
-    // Parse options
-    let options: CompileOptions = serde_json::from_str(options_json)
-        .map_err(|e| JsValue::from_str(&format!("Invalid options: {}", e)))?;
-
-    // Compile
-    let result = compile(element_json, &options).map_err(|e| {
-        let error_obj = serde_wasm_bindgen::to_value(&e).unwrap_or_else(|_| JsValue::from_str(&e.message));
-        error_obj
-    })?;
-
-    // Return result as JS object
-    serde_wasm_bindgen::to_value(&result)
-        .map_err(|e| JsValue::from_str(&format!("Serialization error: {}", e)))
-}
-
-/// Get version information.
-#[wasm_bindgen]
-pub fn version() -> String {
-    env!("CARGO_PKG_VERSION").to_string()
 }
 
 #[cfg(test)]

@@ -57,7 +57,6 @@ fn main() {
                 Ok(r) => {
                     // Apply CLI overrides
                     if let Some(w) = width {
-                        // Re-compile with overridden width
                         let doc: htvg::HtvgDocument = serde_json::from_str(&json).unwrap();
                         let mut opts = doc.meta;
                         opts.width = w;
