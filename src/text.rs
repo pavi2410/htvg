@@ -103,10 +103,20 @@ impl TextLayoutEngine {
         for line in layout.lines() {
             let metrics = line.metrics();
             let mut line_glyphs = Vec::new();
+            let mut line_start: Option<usize> = None;
+            let mut line_end: usize = 0;
 
             for item in line.items() {
                 if let PositionedLayoutItem::GlyphRun(positioned_run) = item {
                     let run_x = positioned_run.offset();
+                    let run = positioned_run.run();
+                    let range = run.text_range();
+                    if line_start.is_none() || range.start < line_start.unwrap() {
+                        line_start = Some(range.start);
+                    }
+                    if range.end > line_end {
+                        line_end = range.end;
+                    }
 
                     // Get glyphs from the positioned run directly
                     for glyph in positioned_run.glyphs() {
@@ -120,7 +130,14 @@ impl TextLayoutEngine {
                 }
             }
 
+            let line_text = if let Some(start) = line_start {
+                text[start..line_end].trim_end().to_string()
+            } else {
+                String::new()
+            };
+
             lines.push(TextLine {
+                text: line_text,
                 baseline: metrics.baseline,
                 ascent: metrics.ascent,
                 descent: metrics.descent,
@@ -153,6 +170,7 @@ pub struct TextLayoutResult {
 /// A line of laid out text.
 #[derive(Debug, Clone)]
 pub struct TextLine {
+    pub text: String,
     pub baseline: f32,
     pub ascent: f32,
     pub descent: f32,

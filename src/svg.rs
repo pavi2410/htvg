@@ -87,16 +87,14 @@ impl<'a> SvgBuilder<'a> {
             }
 
             RenderCommand::Text {
-                x,
-                y,
-                content,
                 font_family,
                 font_size,
                 font_weight,
                 color,
+                lines,
                 ..
             } => {
-                self.render_text(*x, *y, content, font_family, *font_size, *font_weight, color);
+                self.render_text(font_family, *font_size, *font_weight, color, lines);
             }
 
             RenderCommand::TextPath { path_data, color } => {
@@ -238,31 +236,58 @@ impl<'a> SvgBuilder<'a> {
 
     fn render_text(
         &mut self,
-        x: f32,
-        y: f32,
-        content: &str,
         font_family: &str,
         font_size: f32,
         font_weight: u16,
         color: &crate::element::Color,
+        lines: &[crate::render::TextLineRender],
     ) {
         let p = self.options.precision;
 
-        self.output.push_str(&format!(
-            "<text x=\"{:.p$}\" y=\"{:.p$}\" \
-             fill=\"{}\" \
-             font-family=\"{}\" \
-             font-size=\"{:.p$}\" \
-             font-weight=\"{}\">{}</text>",
-            x,
-            y,
-            color.to_css(),
-            escape_xml(font_family),
-            font_size,
-            font_weight,
-            escape_xml(content),
-            p = p
-        ));
+        if lines.is_empty() {
+            return;
+        }
+
+        if lines.len() == 1 {
+            let line = &lines[0];
+            self.output.push_str(&format!(
+                "<text x=\"{:.p$}\" y=\"{:.p$}\" \
+                 fill=\"{}\" \
+                 font-family=\"{}\" \
+                 font-size=\"{:.p$}\" \
+                 font-weight=\"{}\">{}</text>",
+                line.x,
+                line.y,
+                color.to_css(),
+                escape_xml(font_family),
+                font_size,
+                font_weight,
+                escape_xml(&line.text),
+                p = p
+            ));
+        } else {
+            self.output.push_str(&format!(
+                "<text fill=\"{}\" \
+                 font-family=\"{}\" \
+                 font-size=\"{:.p$}\" \
+                 font-weight=\"{}\">",
+                color.to_css(),
+                escape_xml(font_family),
+                font_size,
+                font_weight,
+                p = p
+            ));
+            for line in lines {
+                self.output.push_str(&format!(
+                    "<tspan x=\"{:.p$}\" y=\"{:.p$}\">{}</tspan>",
+                    line.x,
+                    line.y,
+                    escape_xml(&line.text),
+                    p = p
+                ));
+            }
+            self.output.push_str("</text>");
+        }
     }
 
     fn render_text_path(&mut self, path_data: &str, color: &crate::element::Color) {

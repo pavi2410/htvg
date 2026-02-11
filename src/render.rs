@@ -219,21 +219,15 @@ fn render_node(
 
                 // Convert to render command
                 let mut lines = Vec::new();
-                let mut current_y = y;
 
                 for line in &text_layout.lines {
-                    // For simplicity, we'll output the original text
-                    // In a more complete implementation, we'd track which glyphs
-                    // correspond to which characters
                     lines.push(TextLineRender {
                         x,
-                        y: current_y + line.baseline,
-                        text: content.clone(), // Simplified - should be per-line
+                        y: y + line.baseline,
+                        text: line.text.clone(),
                     });
-                    current_y += line.ascent + line.descent;
                 }
 
-                // For now, output as simple text command
                 commands.push(RenderCommand::Text {
                     x,
                     y: y + text_layout.lines.first().map(|l| l.baseline).unwrap_or(style.font_size),
