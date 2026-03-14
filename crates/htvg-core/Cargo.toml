@@ -27,3 +27,6 @@ base64 = "0.22"
 
 # Error handling
 thiserror = "2.0.18"
+
+[dev-dependencies]
+insta = "1.42"

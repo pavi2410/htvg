@@ -1,0 +1,6 @@
+---
+source: crates/htvg-core/tests/playbadges_snapshot.rs
+expression: result.svg
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200.00" height="630.00" viewBox="0 0 1200.00 630.00"><rect x="0.00" y="0.00" width="1200.00" height="630.00" fill="#1a1a1a"/><text fill="#ffffff" font-family="'sans-serif', sans-serif" font-size="72.00" font-weight="800"><tspan x="48.00" y="116.13">Building a CSS-in-Rust SVG</tspan><tspan x="48.00" y="202.53">Generator</tspan></text><text x="48.00" y="506.49" fill="#ffffff" font-family="'sans-serif', sans-serif" font-size="28.00" font-weight="400">Pavitra Golchha</text><rect x="48.00" y="538.00" width="70.00" height="45.00" rx="6.00" fill="#4ade80"/><text x="64.00" y="568.71" fill="#000000" font-family="'sans-serif', sans-serif" font-size="24.00" font-weight="400">css</text><rect x="130.00" y="538.00" width="82.00" height="45.00" rx="6.00" fill="#22d3ee"/><text x="146.00" y="568.71" fill="#000000" font-family="'sans-serif', sans-serif" font-size="24.00" font-weight="400">web</text><rect x="224.00" y="538.00" width="186.00" height="45.00" rx="6.00" fill="#fb7185"/><text x="240.00" y="568.71" fill="#000000" font-family="'sans-serif', sans-serif" font-size="24.00" font-weight="400">performance</text></svg>

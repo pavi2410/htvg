@@ -58,6 +58,9 @@ export interface BoxStyle {
   margin?: Spacing;
   padding?: Spacing;
 
+  flexGrow?: number;
+  flexShrink?: number;
+
   backgroundColor?: Color;
   borderWidth?: number;
   borderColor?: Color;
@@ -84,6 +87,9 @@ export interface FlexStyle {
   alignItems?: AlignItems;
   gap?: number;
   flexWrap?: FlexWrap;
+
+  flexGrow?: number;
+  flexShrink?: number;
 
   backgroundColor?: Color;
   borderWidth?: number;
