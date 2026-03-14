@@ -1,0 +1,10 @@
+{
+  "name": "htvg-workspace",
+  "private": true,
+  "packageManager": "pnpm@10.31.0",
+  "scripts": {
+    "build": "pnpm --filter htvg build",
+    "dev": "pnpm --filter htvg-demo dev",
+    "deploy": "pnpm --filter htvg-demo deploy"
+  }
+}

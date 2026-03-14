@@ -8,7 +8,7 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "htvg": "file:../htvg"
+    "htvg": "workspace:*"
   },
   "devDependencies": {
     "wrangler": "^4",

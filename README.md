@@ -179,6 +179,19 @@ cargo build --release
 wasm-pack build --target web
 ```
 
+### JavaScript packages (pnpm workspaces)
+
+```bash
+# Install all workspace dependencies
+pnpm install
+
+# Build the htvg npm package
+pnpm build
+
+# Run the demo app
+pnpm dev
+```
+
 ## Architecture
 
 ```
