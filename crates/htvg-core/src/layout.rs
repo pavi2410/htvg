@@ -377,6 +377,8 @@ fn box_style_to_taffy(style: &BoxStyle) -> Style {
         margin: spacing_to_taffy_rect(&style.margin),
         padding: spacing_to_taffy_rect_lp(&style.padding),
         border: spacing_to_taffy_rect_lp(&style.border_width.map(Spacing::Uniform)),
+        flex_grow: style.flex_grow.unwrap_or(0.0),
+        flex_shrink: style.flex_shrink.unwrap_or(1.0),
         ..Default::default()
     }
 }
@@ -431,6 +433,8 @@ fn flex_style_to_taffy(style: &FlexStyle) -> Style {
             Some(ElemFlexWrap::Wrap) => taffy::FlexWrap::Wrap,
             _ => taffy::FlexWrap::NoWrap,
         },
+        flex_grow: style.flex_grow.unwrap_or(0.0),
+        flex_shrink: style.flex_shrink.unwrap_or(1.0),
         ..Default::default()
     }
 }

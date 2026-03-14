@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "width": 350,
+    "height": 150
+  },
+  "content": {
+    "type": "flex",
+    "style": {
+      "width": 350,
+      "height": 150,
+      "flexDirection": "row",
+      "alignItems": "center",
+      "padding": "0 12",
+      "borderRadius": 24,
+      "borderWidth": 2,
+      "borderColor": "#1f2937",
+      "backgroundColor": "#000000"
+    },
+    "children": [
+      {
+        "type": "image",
+        "src": "https://play-lh.googleusercontent.com/example-icon",
+        "width": 120,
+        "height": 120,
+        "style": {
+          "borderRadius": 16,
+          "margin": "0 16 0 0"
+        }
+      },
+      {
+        "type": "flex",
+        "style": {
+          "flexDirection": "column",
+          "flexGrow": 1,
+          "height": 126
+        },
+        "children": [
+          {
+            "type": "flex",
+            "style": {
+              "flexDirection": "column",
+              "flexGrow": 1
+            },
+            "children": [
+              {
+                "type": "text",
+                "content": "VR Compatibility Checker",
+                "style": {
+                  "fontSize": 20,
+                  "fontWeight": 600,
+                  "color": "#ffffff"
+                }
+              },
+              {
+                "type": "text",
+                "content": "pavi2410",
+                "style": {
+                  "fontWeight": 600,
+                  "color": "#4ade80"
+                }
+              }
+            ]
+          },
+          {
+            "type": "flex",
+            "style": {
+              "flexDirection": "row",
+              "justifyContent": "space-between",
+              "alignItems": "center"
+            },
+            "children": [
+              {
+                "type": "text",
+                "content": "150K",
+                "style": {
+                  "fontWeight": 600,
+                  "color": "#ffffff"
+                }
+              },
+              {
+                "type": "text",
+                "content": "4.4 ★ (1.2K)",
+                "style": {
+                  "color": "#9ca3af"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
