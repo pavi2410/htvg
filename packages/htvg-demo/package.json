@@ -1,17 +1,31 @@
 {
-  "name": "htvg-demo",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
-  },
-  "dependencies": {
-    "htvg": "workspace:*"
-  },
-  "devDependencies": {
-    "wrangler": "^4",
-    "@cloudflare/workers-types": "^4"
-  }
+	"name": "htvg-demo",
+	"dependencies": {
+		"@codemirror/lang-json": "^6.0.1",
+		"@uiw/react-codemirror": "^4.25.2",
+		"hono": "4.11.1",
+		"htvg": "workspace:*",
+		"react": "19.2.1",
+		"react-dom": "19.2.1"
+	},
+	"devDependencies": {
+		"@cloudflare/vite-plugin": "1.15.3",
+		"@types/node": "24.10.1",
+		"@types/react": "19.2.7",
+		"@types/react-dom": "19.2.3",
+		"@vitejs/plugin-react": "5.1.1",
+		"typescript": "5.8.3",
+		"vite": "^6.0.0",
+		"wrangler": "4.56.0"
+	},
+	"private": true,
+	"scripts": {
+		"build": "tsc -b && vite build",
+		"cf-typegen": "wrangler types",
+		"check": "tsc && vite build && wrangler deploy --dry-run",
+		"deploy": "wrangler deploy",
+		"dev": "vite",
+		"preview": "npm run build && vite preview"
+	},
+	"type": "module"
 }
