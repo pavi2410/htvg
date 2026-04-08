@@ -1,0 +1,6 @@
+---
+source: crates/htvg-core/tests/playbadges_snapshot.rs
+expression: result.svg
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300.00" height="100.00" viewBox="0 0 300.00 100.00"><rect x="0.00" y="0.00" width="300.00" height="100.00" fill="#000000"/><rect x="0.00" y="0.00" width="50.00" height="50.00" fill="#ff0000"/><rect x="50.00" y="0.00" width="250.00" height="100.00" fill="#00ff00"/><text x="50.00" y="15.14" fill="#ffffff" font-family="'sans-serif', sans-serif" font-size="16.00" font-weight="400">Expanded</text></svg>

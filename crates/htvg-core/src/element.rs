@@ -389,6 +389,10 @@ pub struct BoxStyle {
     pub margin: Option<Spacing>,
     pub padding: Option<Spacing>,
 
+    // Flex child properties
+    pub flex_grow: Option<f32>,
+    pub flex_shrink: Option<f32>,
+
     // Visual
     pub background_color: Option<Color>,
     pub border_width: Option<f32>,
@@ -422,6 +426,10 @@ pub struct FlexStyle {
     pub align_items: Option<AlignItems>,
     pub gap: Option<f32>,
     pub flex_wrap: Option<FlexWrap>,
+
+    // Flex child properties
+    pub flex_grow: Option<f32>,
+    pub flex_shrink: Option<f32>,
 
     // Visual
     pub background_color: Option<Color>,
